@@ -45,6 +45,28 @@ FEATS = ["earn", "vol20", "ret5", "ret20", "vratio", "off_hi", "vix", "tech"]
 TECH_EXTRA = {"AMZN", "TSLA"}
 
 
+def build_features(C, V, vix, E, tech):
+    """Every feature for day t from data up to the PREVIOUS close (t-1) -- except `earn`,
+    which flags a release landing on t (its date is scheduled in advance).
+    C, V: close / volume frames (rows = days, cols = tickers); vix: series on the same
+    days; E: bool frame of earnings days; tech: {ticker: bool}."""
+    days = C.index
+    R = C.pct_change(fill_method=None)
+    prev = C.shift(1)
+    return {
+        "earn": E.astype(float),
+        "vol20": R.rolling(20).std().shift(1),
+        "ret5": prev / C.shift(6) - 1,
+        "ret20": prev / C.shift(21) - 1,
+        "vratio": V.shift(1) / V.shift(2).rolling(20).mean(),
+        "off_hi": prev / prev.rolling(252, min_periods=200).max() - 1,
+        "vix": pd.DataFrame(np.repeat(vix.shift(1).to_numpy()[:, None], C.shape[1], 1),
+                            index=days, columns=C.columns),
+        "tech": pd.DataFrame(np.repeat(np.array([[float(tech[t]) for t in C.columns]]),
+                                       len(days), 0), index=days, columns=C.columns),
+    }
+
+
 def load(threshold, end):
     m = Membership(HERE / "ref" / "sp500_components_by_date.csv")
     tickers = m.all_between(20220101, end)
@@ -72,19 +94,7 @@ def load(threshold, end):
     tech = {t: (sector.get(t) in ("Information Technology", "Communication Services")
                 or t in TECH_EXTRA) for t in C.columns}
 
-    prev = C.shift(1)
-    F = {
-        "earn": E.astype(float),
-        "vol20": R.rolling(20).std().shift(1),
-        "ret5": prev / C.shift(6) - 1,
-        "ret20": prev / C.shift(21) - 1,
-        "vratio": V.shift(1) / V.shift(2).rolling(20).mean(),
-        "off_hi": prev / prev.rolling(252, min_periods=200).max() - 1,
-        "vix": pd.DataFrame(np.repeat(vix.shift(1).reindex(days).to_numpy()[:, None],
-                                      C.shape[1], 1), index=days, columns=C.columns),
-        "tech": pd.DataFrame(np.repeat(np.array([[float(tech[t]) for t in C.columns]]),
-                                       len(days), 0), index=days, columns=C.columns),
-    }
+    F = build_features(C, V, vix.reindex(days), E, tech)
     spy_r = spy.pct_change()
     fwd = {h: (C.shift(-h) / C - 1).sub(spy.shift(-h) / spy - 1, axis=0) for h in (1, 5, 20)}
 
@@ -100,8 +110,13 @@ def load(threshold, end):
     long = long[long["date"] >= 20230101]
     long["big"] = long["ret"].abs() >= threshold
     long["sector"] = long["symbol"].map(sector).fillna("Former member")
+    return attribute_causes(long, spy_r), spy_r
 
-    # ---- attribution (after the fact) ----
+
+def attribute_causes(long, spy_r):
+    """Label each row's cause, after the fact. `long` needs date, ret, big, earn, sector;
+    spy_r maps date -> SPY return. Order of precedence: earnings, market_day, sector_day,
+    else stock_specific."""
     big = long[long["big"]]
     n_big_day = big.groupby("date").size()
     long["market_day"] = long["date"].map(n_big_day).fillna(0).ge(10) | \
@@ -114,7 +129,7 @@ def load(threshold, end):
     long["cause"] = np.select(
         [long["earn"] == 1, long["market_day"], long["peers_same_dir"] >= 3],
         ["earnings", "market_day", "sector_day"], "stock_specific")
-    return long, spy_r
+    return long
 
 
 def summarize(long):

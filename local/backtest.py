@@ -310,7 +310,8 @@ def run(panel, days, start, end, top_n, rebal, stop_on, events, capital, slippag
 
     return {"equity": equity, "trades": trades, "eligible": eligible, "stops": n_stopped,
             "cat_hits": ctx.cat_total_hits, "cat_pre": ctx.cat_minus1_hits,
-            "first_day": days[lo], "last_day": days[hi], "ew_return": ew_val - 1.0}
+            "first_day": days[lo], "last_day": days[hi], "ew_return": ew_val - 1.0,
+            "days": days[lo:hi + 1], "ew_equity": ew_equity}
 
 
 # ------------------------------------------------------------------ scoring
