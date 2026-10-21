@@ -13,7 +13,7 @@ A momentum + volume stock-ranking strategy with an earnings-catalyst filter. It 
 ## How it works
 
 ```mermaid
-flowchart LR
+flowchart TB
   subgraph data["Free data"]
     Y["Yahoo Finance<br/>daily prices"]
     S["S&P 500 membership<br/>on each date"]
