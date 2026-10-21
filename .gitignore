@@ -1,0 +1,17 @@
+# Python environment and caches
+.venv/
+__pycache__/
+*.pyc
+
+# Downloaded Yahoo Finance prices -- rebuilt automatically by local/data.py;
+# Yahoo's terms don't allow redistributing them
+local/cache/
+
+# Personal Claude Code settings and third-party reference docs
+.claude/
+
+# macOS
+.DS_Store
+
+# Mac-only helper with hard-coded personal paths
+since_last.sh

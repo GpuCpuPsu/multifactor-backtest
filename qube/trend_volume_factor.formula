@@ -1,0 +1,1 @@
+0.5 * ZSCORE(0.5 * (DELAY(close, 1) / DELAY(close, 21) - 1) + 0.5 * (DELAY(close, 1) / DELAY(close, 61) - 1)) + 0.5 * ZSCORE(MA(DELAY(volume, 1), 5) / MA(DELAY(volume, 1), 20))

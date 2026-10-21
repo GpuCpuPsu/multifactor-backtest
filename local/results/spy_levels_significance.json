@@ -1,0 +1,81 @@
+{
+  "horizon": 20,
+  "days": 5415,
+  "n_low_touches": 354,
+  "n_high_touches": 1057,
+  "mean_fwd_low": 0.01591,
+  "mean_fwd_high": 0.00604,
+  "mean_fwd_all_days": 0.00934,
+  "median_fwd_low": 0.0256,
+  "median_fwd_high": 0.01219,
+  "diff_low_minus_high": 0.00987,
+  "block_bootstrap": {
+    "block_20d": {
+      "ci95": [
+        -0.00534,
+        0.02345
+      ],
+      "p_two_sided": 0.1762,
+      "reps": 5000
+    },
+    "block_60d": {
+      "ci95": [
+        -0.00507,
+        0.02288
+      ],
+      "p_two_sided": 0.1672,
+      "reps": 5000
+    },
+    "block_120d": {
+      "ci95": [
+        -0.00514,
+        0.02295
+      ],
+      "p_two_sided": 0.1816,
+      "reps": 5000
+    },
+    "block_250d": {
+      "ci95": [
+        -0.00385,
+        0.02219
+      ],
+      "p_two_sided": 0.1426,
+      "reps": 5000
+    }
+  },
+  "non_overlapping": {
+    "n_low": 90,
+    "n_high": 179,
+    "mean_low": 0.01064,
+    "mean_high": 0.00749,
+    "diff": 0.00315,
+    "z": 0.447,
+    "p_two_sided_normal": 0.6545
+  },
+  "stability": {
+    "2005-2012": {
+      "n_low": 165,
+      "n_high": 319,
+      "diff": 0.00465,
+      "median_diff": 0.00434
+    },
+    "2013-2019": {
+      "n_low": 88,
+      "n_high": 379,
+      "diff": 0.02037,
+      "median_diff": 0.018
+    },
+    "2020-2026": {
+      "n_low": 101,
+      "n_high": 359,
+      "diff": 0.01123,
+      "median_diff": 0.01209
+    },
+    "ex_2008-09_and_2020_crashes": {
+      "n_low": 310,
+      "n_high": 1022,
+      "diff": 0.01563,
+      "median_diff": 0.01439
+    }
+  }
+}
