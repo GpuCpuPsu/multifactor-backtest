@@ -15,3 +15,6 @@ local/cache/
 
 # Mac-only helper with hard-coded personal paths
 since_last.sh
+
+# Chart data cache (rebuilt by local/make_charts.py --refresh)
+local/results/curves.json
